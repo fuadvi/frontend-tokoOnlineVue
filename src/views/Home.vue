@@ -5,6 +5,7 @@
     <WomeBanner />
     <Instagram />
     <LogoPatner />
+    <FooterSayna />
   </div>
 </template>
 
@@ -16,6 +17,7 @@ import HeroSection from "@/components/HeroSection.vue";
 import WomeBanner from "@/components/WomeBanner.vue";
 import Instagram from "@/components/Instagram.vue";
 import LogoPatner from "@/components/LogoPatner.vue";
+import FooterSayna from "@/components/FooterSayna.vue";
 
 export default {
   name: "Home",
@@ -25,6 +27,7 @@ export default {
     WomeBanner,
     Instagram,
     LogoPatner,
+    FooterSayna,
   },
 };
 </script>
