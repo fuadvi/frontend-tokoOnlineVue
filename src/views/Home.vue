@@ -3,6 +3,8 @@
     <HeaderSayna />
     <HeroSection />
     <WomeBanner />
+    <Instagram />
+    <LogoPatner />
   </div>
 </template>
 
@@ -12,6 +14,8 @@
 import HeaderSayna from "@/components/HeaderSayna.vue";
 import HeroSection from "@/components/HeroSection.vue";
 import WomeBanner from "@/components/WomeBanner.vue";
+import Instagram from "@/components/Instagram.vue";
+import LogoPatner from "@/components/LogoPatner.vue";
 
 export default {
   name: "Home",
@@ -19,6 +23,8 @@ export default {
     HeaderSayna,
     HeroSection,
     WomeBanner,
+    Instagram,
+    LogoPatner,
   },
 };
 </script>
