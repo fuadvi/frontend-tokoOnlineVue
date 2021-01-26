@@ -4,7 +4,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-5">
-          <div class="footer-left">
+          <div class="footer-left text-left">
             <div class="footer-logo">
               <a href="#"
                 ><img src="img/logo_website_shayna_white.png" alt=""
@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="col-lg-3 offset-lg-1">
-          <div class="footer-widget">
+          <div class="footer-widget text-left">
             <h5>Information</h5>
             <ul>
               <li><a href="#">About Us</a></li>
@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="col-lg-3">
-          <div class="footer-widget">
+          <div class="footer-widget text-left">
             <h5>My Account</h5>
             <ul>
               <li><a href="#">My Account</a></li>
