@@ -69,38 +69,21 @@
               <div class="col-lg-6">
                 <div class="product-details text-left">
                   <div class="pd-title">
-                    <span>oranges</span>
-                    <h3>Pure Pineapple</h3>
+                    <span>{{ productDetails.type }}</span>
+                    <h3>{{ productDetails.name }}</h3>
                   </div>
                   <div class="pd-desc">
                     <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Corporis, error officia. Rem aperiam laborum voluptatum
-                      vel, pariatur modi hic provident eum iure natus quos non a
-                      sequi, id accusantium! Autem.
+                      {{ productDetails.description }}
                     </p>
-                    <p>
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Quam possimus quisquam animi, commodi, nihil voluptate
-                      nostrum neque architecto illo officiis doloremque et
-                      corrupti cupiditate voluptatibus error illum. Commodi
-                      expedita animi nulla aspernatur. Id asperiores blanditiis,
-                      omnis repudiandae iste inventore cum, quam sint molestiae
-                      accusamus voluptates ex tempora illum sit perspiciatis.
-                      Nostrum dolor tenetur amet, illo natus magni veniam quia
-                      sit nihil dolores. Commodi ratione distinctio harum
-                      voluptatum velit facilis voluptas animi non laudantium, id
-                      dolorem atque perferendis enim ducimus? A exercitationem
-                      recusandae aliquam quod. Itaque inventore obcaecati, unde
-                      quam impedit praesentium veritatis quis beatae ea atque
-                      perferendis voluptates velit architecto?
-                    </p>
-                    <h4>$495.00</h4>
+                    <h4>${{ productDetails.price }}</h4>
                   </div>
                   <div class="quantity">
-                    <a href="shopping-cart.html" class="primary-btn pd-cart"
-                      >Add To Cart</a
-                    >
+                    <router-link to="cart">
+                      <a href="shopping-cart.html" class="primary-btn pd-cart">
+                        Add To Cart
+                      </a>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -123,7 +106,9 @@
 import HeaderSayna from "@/components/HeaderSayna.vue";
 import FooterSayna from "@/components/FooterSayna.vue";
 import RelateProduct from "@/components/RelatedProducts.vue";
+
 import carousel from "vue-owl-carousel";
+import axios from "axios";
 
 export default {
   name: "product",
@@ -142,12 +127,23 @@ export default {
         "img/mickey3.jpg",
         "img/mickey4.jpg",
       ],
+      productDetails: [],
     };
   },
   methods: {
     changeImage(urlImage) {
       this.gambar_default = urlImage;
     },
+  },
+  mounted() {
+    axios
+      .get("http://127.0.0.1:8000/api/products", {
+        params: {
+          id: this.$route.params.id,
+        },
+      })
+      .then((res) => (this.productDetails = res.data.data))
+      .catch((err) => console.log(err));
   },
 };
 </script>
