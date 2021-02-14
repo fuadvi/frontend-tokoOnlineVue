@@ -33,29 +33,24 @@
                         <th>Action</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
+                    <tbody v-if="keranjangUser.length > 0">
+                      <tr
+                        v-for="keranjang in keranjangUser"
+                        :key="keranjang.id"
+                      >
                         <td class="cart-pic first-row">
-                          <img src="img/cart-page/product-1.jpg" />
+                          <img class="card-image" :src="keranjang.photo" />
                         </td>
                         <td class="cart-title first-row text-center">
-                          <h5>Pure Pineapple</h5>
+                          <h5>{{ keranjang.name }}</h5>
                         </td>
-                        <td class="p-price first-row">$60.00</td>
+                        <td class="p-price first-row">
+                          ${{ keranjang.price }}
+                        </td>
                         <td class="delete-item">
-                          <a href="#"><i class="material-icons"> close </i></a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="cart-pic first-row">
-                          <img src="img/cart-page/product-1.jpg" />
-                        </td>
-                        <td class="cart-title first-row text-center">
-                          <h5>Pure Pineapple</h5>
-                        </td>
-                        <td class="p-price first-row">$60.00</td>
-                        <td class="delete-item">
-                          <a href="#"><i class="material-icons"> close </i></a>
+                          <a @click="removeItem(keranjangUser.index)" href="#"
+                            ><i class="material-icons"> close </i></a
+                          >
                         </td>
                       </tr>
                     </tbody>
@@ -150,10 +145,68 @@
 
 <script>
 import HeaderSayna from "@/components/HeaderSayna.vue";
+import axios from "axios";
+
 export default {
   name: "cart",
   components: {
     HeaderSayna,
   },
+  data() {
+    return {
+      gambar_default: "",
+      productDetails: [],
+      keranjangUser: [],
+    };
+  },
+  methods: {
+    changeImage(urlImage) {
+      this.gambar_default = urlImage;
+    },
+    setDataPicture(data) {
+      this.productDetails = data;
+      this.gambar_default = data.galleries[0].photo;
+    },
+    saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct) {
+      var productStorage = {
+        id: idProduct,
+        name: nameProduct,
+        price: priceProduct,
+        photo: photoProduct,
+      };
+      this.keranjangUser.push(productStorage);
+      const parsed = JSON.stringify(this.keranjangUser);
+      localStorage.setItem("keranjangUser", parsed);
+    },
+    removeItem(index) {
+      this.keranjangUser.splice(index, 1);
+      const parsed = JSON.stringify(this.keranjangUser);
+      localStorage.setItem("keranjangUser", parsed);
+    },
+  },
+  mounted() {
+    if (localStorage.getItem("keranjangUser")) {
+      try {
+        this.keranjangUser = JSON.parse(localStorage.getItem("keranjangUser"));
+      } catch (e) {
+        localStorage.removeItem("keranjangUser");
+      }
+    }
+    axios
+      .get("http://127.0.0.1:8000/api/products", {
+        params: {
+          id: this.$route.params.id,
+        },
+      })
+      .then((res) => this.setDataPicture(res.data.data))
+      .catch((err) => console.log(err));
+  },
 };
 </script>
+
+<style scoped>
+.card-image {
+  width: 150px;
+  height: 150px;
+}
+</style>
