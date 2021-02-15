@@ -54,7 +54,7 @@
                             </div>
                           </td>
                           <td
-                            @click="removeItem(keranjangUser.index)"
+                            @click="removeItem(keranjang.id)"
                             class="si-close"
                           >
                             <i class="ti-close"></i>
@@ -68,13 +68,9 @@
                       </tbody>
                     </table>
                   </div>
-                  <div class="select-total" v-if="keranjangUser.length > 0">
+                  <div class="select-total">
                     <span>total:</span>
-                    <h5>$120.00</h5>
-                  </div>
-                  <div class="select-total" v-else>
-                    <span>total:</span>
-                    <h5>$0</h5>
+                    <h5>${{ totalharga }}.00</h5>
                   </div>
                   <div class="select-button">
                     <a href="#" class="primary-btn view-card">
@@ -104,10 +100,19 @@ export default {
     };
   },
   methods: {
-    removeItem(index) {
+    removeItem(idx) {
+      let keranjanUserStorage = JSON.parse(
+        localStorage.getItem("keranjangUser")
+      );
+      let itemKeranjangStorage = keranjanUserStorage.map(
+        (itemKeranjangStorage) => itemKeranjangStorage.id
+      );
+      let index = itemKeranjangStorage.findIndex((id) => id == idx);
       this.keranjangUser.splice(index, 1);
       const parsed = JSON.stringify(this.keranjangUser);
       localStorage.setItem("keranjangUser", parsed);
+
+      window.location.reload();
     },
   },
   mounted() {
@@ -118,6 +123,13 @@ export default {
         localStorage.removeItem("keranjangUser");
       }
     }
+  },
+  computed: {
+    totalharga() {
+      return this.keranjangUser.reduce(function (items, data) {
+        return items + data.price;
+      }, 0);
+    },
   },
 };
 </script>

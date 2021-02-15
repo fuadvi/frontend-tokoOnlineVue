@@ -69,6 +69,7 @@
                         id="namaLengkap"
                         aria-describedby="namaHelp"
                         placeholder="Masukan Nama"
+                        v-model="costumerInfo.name"
                       />
                     </div>
                     <div class="form-group">
@@ -79,6 +80,7 @@
                         id="emailAddress"
                         aria-describedby="emailHelp"
                         placeholder="Masukan Email"
+                        v-model="costumerInfo.email"
                       />
                     </div>
                     <div class="form-group">
@@ -89,6 +91,7 @@
                         id="noHP"
                         aria-describedby="noHPHelp"
                         placeholder="Masukan No. HP"
+                        v-model="costumerInfo.number"
                       />
                     </div>
                     <div class="form-group">
@@ -97,6 +100,7 @@
                         class="form-control"
                         id="alamatLengkap"
                         rows="3"
+                        v-model="costumerInfo.address"
                       ></textarea>
                     </div>
                   </form>
@@ -112,10 +116,14 @@
                     <li class="subtotal">
                       ID Transaction <span>#SH12000</span>
                     </li>
-                    <li class="subtotal mt-3">Subtotal <span>$240.00</span></li>
-                    <li class="subtotal mt-3">Pajak <span>10%</span></li>
                     <li class="subtotal mt-3">
-                      Total Biaya <span>$440.00</span>
+                      Subtotal <span>${{ totalharga }}.00</span>
+                    </li>
+                    <li class="subtotal mt-3">
+                      Pajak <span>10% (${{ pajak }})</span>
+                    </li>
+                    <li class="subtotal mt-3">
+                      Total Biaya <span>${{ totalBiaya }}.00</span>
                     </li>
                     <li class="subtotal mt-3">
                       Bank Transfer <span>Mandiri</span>
@@ -128,7 +136,11 @@
                     </li>
                   </ul>
                   <router-link to="success">
-                    <a href="success.html" class="proceed-btn">
+                    <a
+                      @click="checkout()"
+                      href="success.html"
+                      class="proceed-btn"
+                    >
                       I ALREADY PAID
                     </a>
                   </router-link>
@@ -154,34 +166,40 @@ export default {
   },
   data() {
     return {
-      gambar_default: "",
-      productDetails: [],
       keranjangUser: [],
+      costumerInfo: {
+        name: "",
+        email: "",
+        number: "",
+        address: "",
+      },
     };
   },
   methods: {
-    changeImage(urlImage) {
-      this.gambar_default = urlImage;
-    },
-    setDataPicture(data) {
-      this.productDetails = data;
-      this.gambar_default = data.galleries[0].photo;
-    },
-    saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct) {
-      var productStorage = {
-        id: idProduct,
-        name: nameProduct,
-        price: priceProduct,
-        photo: photoProduct,
-      };
-      this.keranjangUser.push(productStorage);
-      const parsed = JSON.stringify(this.keranjangUser);
-      localStorage.setItem("keranjangUser", parsed);
-    },
     removeItem(index) {
       this.keranjangUser.splice(index, 1);
       const parsed = JSON.stringify(this.keranjangUser);
       localStorage.setItem("keranjangUser", parsed);
+    },
+    checkout() {
+      let productIds = this.keranjangUser.map(function (product) {
+        return product.id;
+      });
+
+      let checkoutData = {
+        name: this.costumerInfo.name,
+        email: this.costumerInfo.email,
+        number: this.costumerInfo.number,
+        address: this.costumerInfo.address,
+        transaction_total: this.totalBiaya,
+        transaction_status: "PENDING",
+        transaction_details: productIds,
+      };
+
+      axios
+        .post("http://127.0.0.1:8000/api/checkout", checkoutData)
+        .then(() => this.$route.push("success"))
+        .catch((err) => console.log(err));
     },
   },
   mounted() {
@@ -192,14 +210,27 @@ export default {
         localStorage.removeItem("keranjangUser");
       }
     }
-    axios
-      .get("http://127.0.0.1:8000/api/products", {
-        params: {
-          id: this.$route.params.id,
-        },
-      })
-      .then((res) => this.setDataPicture(res.data.data))
-      .catch((err) => console.log(err));
+    // axios
+    //   .get("http://127.0.0.1:8000/api/products", {
+    //     params: {
+    //       id: this.$route.params.id,
+    //     },
+    //   })
+    //   .then((res) => this.setDataPicture(res.data.data))
+    //   .catch((err) => console.log(err));
+  },
+  computed: {
+    totalharga() {
+      return this.keranjangUser.reduce(function (items, data) {
+        return items + data.price;
+      }, 0);
+    },
+    pajak() {
+      return (this.totalharga * 10) / 100;
+    },
+    totalBiaya() {
+      return this.totalharga + this.pajak;
+    },
   },
 };
 </script>
